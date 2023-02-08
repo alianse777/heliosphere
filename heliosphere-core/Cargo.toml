@@ -8,6 +8,7 @@ readme = "README.md"
 license = "MIT"
 keywords = ["tron", "blockchain", "api", "client", "cryptocurrency"]
 categories = ["api-bindings"]
+repository = "https://github.com/3A-Technologies/heliosphere"
 
 [features]
 default = ["ethabi_compat"]
