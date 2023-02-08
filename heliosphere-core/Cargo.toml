@@ -1,0 +1,33 @@
+[package]
+name = "heliosphere-core"
+version = "0.1.0"
+authors = ["3A Technologies Ltd", "alianse777"]
+edition = "2021"
+description = "Rust-idiomatic Tron API client library"
+readme = "README.md"
+license = "MIT"
+keywords = ["tron", "blockchain", "api", "client", "cryptocurrency"]
+categories = ["api-bindings"]
+
+[features]
+default = ["ethabi_compat"]
+ethabi_compat = ["ethabi"]
+
+[dependencies]
+bs58 = { version = "0.4.0", default-features = false, features = [
+    "alloc",
+    "check",
+] }
+derive-new = { version = "0.5.9", default-features = false }
+ethabi = { version = "18.0.0", default-features = false, features = [
+    "serde",
+], optional = true }
+hex = { version = "0.4.3", default-features = false, features = ["alloc"] }
+serde = { version = "1.0.152", default-features = false, features = [
+    "derive",
+    "alloc",
+] }
+serde_json = { version = "1.0.91", default-features = false, features = [
+    "alloc",
+] }
+sha2 = { version = "0.10.6", default-features = false }

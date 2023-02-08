@@ -1,0 +1,7 @@
+[workspace]
+
+members = [
+    "heliosphere",
+    "heliosphere-core",
+    "heliosphere-signer",
+]
