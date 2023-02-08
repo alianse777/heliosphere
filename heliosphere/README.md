@@ -6,6 +6,8 @@ Rust-idiomatic Tron API client library.
 
 ## Supported features
 
+| Features | Support |
+|----------|---------|
 | Transaction signing & broadcasting | [x] |
 | Smart contract calls | [x] |
 | Basic network querying | [x] |
