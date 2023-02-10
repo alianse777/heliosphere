@@ -20,9 +20,9 @@ Rust-idiomatic Tron API client library.
 
 | Crate         | Description     |
 |--------------|------------------|
-| [heliosphere](https://crates.io/heliosphere) | Main crate |
-| [heliosphere-core](https://crates.io/heliosphere-core) | Core types, no-std but requires alloc |
-| [heliosphere-signer](https://crates.io/heliosphere-signer) | Transaction signing utils,  no-std but requires alloc |
+| [heliosphere](https://crates.io/crates/heliosphere) | Main crate |
+| [heliosphere-core](https://crates.io/crates/heliosphere-core) | Core types, no-std but requires alloc |
+| [heliosphere-signer](https://crates.io/crates/heliosphere-signer) | Transaction signing utils,  no-std but requires alloc |
 
 ## TRC20 transfer example
 
