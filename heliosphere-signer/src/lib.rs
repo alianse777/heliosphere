@@ -1,4 +1,4 @@
-//! heliosphere transaction signing
+//! [heliosphere](https://crates.io/crates/heliosphere) transaction signing
 #![forbid(unsafe_code)]
 #![deny(missing_docs)]
 
