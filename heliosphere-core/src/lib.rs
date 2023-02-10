@@ -1,4 +1,4 @@
-//! heliosphere core types
+//! [heliosphere](https://crates.io/crates/heliosphere) core types
 #![forbid(unsafe_code)]
 #![deny(missing_docs)]
 

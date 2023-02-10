@@ -1,1 +1,1 @@
-See [heliosphere](https://crates.io/heliosphere)
+See [heliosphere](https://crates.io/crates/heliosphere)
