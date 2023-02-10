@@ -46,7 +46,7 @@ let method_call = MethodCall {
     selector: "transfer(address,uint256)",
     parameter: &ethabi::encode(&[Token::Address(to.into()), Token::Uint(U256::from(amount))]),
 };
-client
+let tx = client
     .trigger_contract(
         &method_call,
         client.estimate_fee_limit(&method_call).await.unwrap(),
@@ -54,4 +54,9 @@ client
     )
     .await
     .unwrap();
+keypair.sign_transaction(&mut tx).unwrap();
+let txid = client.broadcast_transaction(&tx).await.unwrap();
+println!("Txid: {}", txid);
+println!("Confirming...");
+client.await_confirmation(txid).await.unwrap();
 ```
