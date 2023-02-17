@@ -1,6 +1,6 @@
 [package]
 name = "heliosphere-core"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["3A Technologies Ltd", "alianse777"]
 edition = "2021"
 description = "Rust-idiomatic Tron API client library"
