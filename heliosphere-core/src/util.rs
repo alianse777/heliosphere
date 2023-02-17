@@ -1,9 +1,12 @@
 //! Utility functions
+use alloc::format;
+use alloc::string::String;
+use core::fmt::{Display, LowerHex};
 use serde::{Deserialize, Deserializer, Serializer};
-use std::fmt::{Display, LowerHex};
 
 /// Ser/De number as hex (without 0x prefix)
 pub mod as_hex_number {
+
     use super::*;
 
     /// Serialize
@@ -31,6 +34,8 @@ pub mod as_hex_number {
 
 /// Ser/De u8 buffer as hex string
 pub mod as_hex_buffer {
+    use alloc::vec::Vec;
+
     use super::*;
 
     /// Serialize
@@ -107,6 +112,7 @@ pub mod as_hex_address {
 
 #[cfg(test)]
 mod test {
+    use alloc::{vec, vec::Vec};
     use serde::{Deserialize, Serialize};
 
     use super::*;

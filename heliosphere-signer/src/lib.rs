@@ -1,6 +1,7 @@
 //! [heliosphere](https://crates.io/crates/heliosphere) transaction signing
 #![forbid(unsafe_code)]
 #![deny(missing_docs)]
+#![no_std]
 
 extern crate alloc;
 

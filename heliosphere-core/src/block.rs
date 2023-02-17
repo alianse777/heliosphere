@@ -1,7 +1,11 @@
 //! Block definitions
-use serde::{Deserialize, Serialize};
-
 use crate::{transaction::Transaction, util::as_hex_buffer, Address};
+use alloc::{
+    borrow::ToOwned,
+    string::{String, ToString},
+    vec::Vec,
+};
+use serde::{Deserialize, Serialize};
 
 /// Block identifier
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]

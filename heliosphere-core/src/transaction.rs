@@ -1,6 +1,10 @@
 //! Transaction definitions
 #![allow(missing_docs)]
 use crate::util::{as_hex_array, as_hex_buffer};
+use alloc::{
+    string::{String, ToString},
+    vec::Vec,
+};
 use serde::{Deserialize, Serialize};
 
 /// Transaction id wrapper, serializable as hex string
