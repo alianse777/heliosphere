@@ -22,4 +22,7 @@ pub enum Error {
     /// Invalid index passed
     #[error("invalid index")]
     InvalidIndex,
+    /// Contract does not exists
+    #[error("contract not found")]
+    ContractNotFound,
 }

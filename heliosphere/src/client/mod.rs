@@ -335,6 +335,9 @@ impl RpcClient {
                 }),
             )
             .await?;
+        if resp.constant_result.is_empty() && resp.code.is_none() {
+            return Err(crate::Error::ContractNotFound);
+        }
 
         if let Some(code) = resp.code.as_ref() {
             return Err(crate::Error::ContractQueryFailed(

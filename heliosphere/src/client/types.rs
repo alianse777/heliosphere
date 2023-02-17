@@ -16,6 +16,7 @@ pub struct QueryContractResponse {
     pub code: Option<String>,
     #[serde(default)]
     pub message: String,
+    #[serde(default)]
     pub constant_result: Vec<String>,
     #[serde(default)]
     pub energy_used: u64,
