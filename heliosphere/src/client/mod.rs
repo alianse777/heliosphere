@@ -292,15 +292,19 @@ impl RpcClient {
 
     /** Call a smart contract method
      ** method_call: Call parameters
-     ** fee_limit - Maximum TRX consumption, measured in SUN (1 TRX = 1,000,000 SUN)
      ** value - Amount of TRX in SUN to send along with method call
+     ** fee_limit - Maximum TRX consumption, measured in SUN (1 TRX = 1,000,000 SUN)
      */
     pub async fn trigger_contract(
         &self,
         method_call: &MethodCall<'_>,
-        fee_limit: u64,
         value: u64,
+        fee_limit: Option<u64>,
     ) -> Result<Transaction, crate::Error> {
+        let fee_limit = match fee_limit {
+            Some(fee_limit) => fee_limit,
+            None => self.estimate_fee_limit(method_call).await?,
+        };
         let resp: TriggerContractResponse = self
             .api_post(
                 "/wallet/triggersmartcontract",

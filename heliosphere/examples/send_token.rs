@@ -52,11 +52,7 @@ async fn main() {
 
     // Send token
     let mut tx = client
-        .trigger_contract(
-            &method_call,
-            client.estimate_fee_limit(&method_call).await.unwrap(),
-            0,
-        )
+        .trigger_contract(&method_call, 0, None)
         .await
         .unwrap();
     keypair.sign_transaction(&mut tx).unwrap();
