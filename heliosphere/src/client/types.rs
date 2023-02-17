@@ -1,7 +1,7 @@
 use heliosphere_core::transaction::{Transaction, TransactionId};
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct BroadcastTxResponse {
     #[serde(default)]
     pub code: Option<String>,
@@ -10,13 +10,12 @@ pub struct BroadcastTxResponse {
     pub txid: TransactionId,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct QueryContractResponse {
     #[serde(default)]
     pub code: Option<String>,
     #[serde(default)]
     pub message: String,
-    #[serde(default)]
     pub constant_result: Vec<String>,
     #[serde(default)]
     pub energy_used: u64,
@@ -32,7 +31,7 @@ impl QueryContractResponse {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct TriggerContractResponse {
     pub transaction: Transaction,
 }
