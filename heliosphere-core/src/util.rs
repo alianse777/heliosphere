@@ -65,7 +65,7 @@ pub mod as_hex_array {
     where
         S: Serializer,
     {
-        serializer.serialize_str(&hex::encode(buf))
+        serializer.serialize_str(&format!("0x{}", hex::encode(buf)))
     }
 
     /// Deserialize (strip 0x if present)
