@@ -1,8 +1,8 @@
 use heliosphere::RpcClient;
 use heliosphere_core::block::BlockBy;
 
-#[tokio::main]
-async fn main() {
+#[tokio::test]
+async fn test_get_block() {
     let api = "https://api.shasta.trongrid.io";
     let client = RpcClient::new(api).unwrap();
     let latest_block = client.get_latest_block().await.unwrap();

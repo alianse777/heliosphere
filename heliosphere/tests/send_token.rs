@@ -3,8 +3,8 @@ use heliosphere::{MethodCall, RpcClient};
 use heliosphere_core::Address;
 use heliosphere_signer::{keypair::Keypair, signer::Signer};
 
-#[tokio::main]
-async fn main() {
+#[tokio::test]
+async fn test_send_token() {
     let api = "https://api.shasta.trongrid.io";
     let keypair = Keypair::from_hex_key(
         std::fs::read_to_string(".key")
@@ -19,7 +19,7 @@ async fn main() {
     let amount: u64 = 1; // 0.000001 USDT
 
     // Fetch account balance before
-    let method_call = MethodCall {
+    let method_call_balance = MethodCall {
         caller: &from,
         contract: &usdt,
         selector: "balanceOf(address)",
@@ -28,17 +28,17 @@ async fn main() {
     let res = &ethabi::decode(
         &[ParamType::Uint(256)],
         &client
-            .query_contract(&method_call)
+            .query_contract(&method_call_balance)
             .await
             .unwrap()
             .constant_result(0)
             .unwrap(),
     )
     .unwrap()[0];
-    match res {
-        Token::Uint(x) => println!("Balance: {}", x),
+    let old_balance = match res {
+        Token::Uint(x) => x,
         _ => panic!("Wrong type"),
-    }
+    };
 
     let method_call = MethodCall {
         caller: &from,
@@ -62,24 +62,19 @@ async fn main() {
     client.await_confirmation(txid).await.unwrap();
 
     // Fetch account balance after
-    let method_call = MethodCall {
-        caller: &from,
-        contract: &usdt,
-        selector: "balanceOf(address)",
-        parameter: &ethabi::encode(&[Token::Address(from.into())]),
-    };
     let res = &ethabi::decode(
         &[ParamType::Uint(256)],
         &client
-            .query_contract(&method_call)
+            .query_contract(&method_call_balance)
             .await
             .unwrap()
             .constant_result(0)
             .unwrap(),
     )
     .unwrap()[0];
-    match res {
-        Token::Uint(x) => println!("Balance: {}", x),
+    let new_balance = match res {
+        Token::Uint(x) => x,
         _ => panic!("Wrong type"),
-    }
+    };
+    assert_eq!(*old_balance, *new_balance + amount);
 }

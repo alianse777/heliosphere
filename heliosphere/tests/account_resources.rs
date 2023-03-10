@@ -1,8 +1,8 @@
 use heliosphere::RpcClient;
 use heliosphere_signer::{keypair::Keypair, signer::Signer};
 
-#[tokio::main]
-async fn main() {
+#[tokio::test]
+async fn test_account_resources() {
     let api = "https://api.shasta.trongrid.io";
     let keypair = Keypair::from_hex_key(
         std::fs::read_to_string(".key")
