@@ -1,4 +1,8 @@
-use heliosphere_core::transaction::{Transaction, TransactionId};
+use heliosphere_core::{
+    block::BlockId,
+    transaction::{Transaction, TransactionId},
+    Address,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Debug, Clone)]
@@ -114,4 +118,33 @@ pub(crate) struct ChainParameter {
 pub(crate) struct ChainParametersResponse {
     #[serde(rename = "chainParameter")]
     pub chain_parameter: Vec<ChainParameter>,
+}
+
+/// Used by GetAccountBalance
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub(crate) struct BlockIdentifier {
+    pub hash: BlockId,
+    pub number: u64,
+}
+
+/// Used by GetAccountBalance
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub(crate) struct AccountIdentifier {
+    pub address: Address,
+}
+
+/// Used by GetAccountBalance
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub(crate) struct GetAccountBalanceRequest {
+    pub account_identifier: AccountIdentifier,
+    pub block_identifier: BlockIdentifier,
+}
+
+/// Used by GetAccountBalance
+#[derive(Debug, Clone, Deserialize)]
+pub(crate) struct GetAccountBalanceResponse {
+    #[serde(default)]
+    pub error: Option<String>,
+    #[serde(default)]
+    pub balance: u64,
 }

@@ -7,6 +7,9 @@ pub enum Error {
     /// RpcError wrapping reqwest::Error
     #[error("rpc error {0}")]
     RpcError(#[from] reqwest::Error),
+    /// API call failed
+    #[error("api error {0}")]
+    ApiError(String),
     /// Returned when tx construction fails (code, message)
     #[error("tx construction failed {0}")]
     TxConstructionFailed(String, String),
