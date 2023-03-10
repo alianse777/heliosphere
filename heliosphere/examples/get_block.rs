@@ -9,7 +9,7 @@ async fn main() {
     println!("block number: {}", latest_block.block_number());
     println!("block id: {}", latest_block.block_id);
     let block_byid = client
-        .get_block(BlockBy::Id(latest_block.block_id.clone()))
+        .get_block(BlockBy::Id(latest_block.block_id))
         .await
         .unwrap();
     let block_bynum = client

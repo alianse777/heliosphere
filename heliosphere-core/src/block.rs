@@ -1,17 +1,42 @@
 //! Block definitions
-use crate::{transaction::Transaction, util::as_hex_buffer, Address};
+use core::{fmt::Display, str::FromStr};
+
+use crate::{
+    transaction::Transaction,
+    util::{as_hex_array, as_hex_buffer},
+    Address, Error,
+};
 use alloc::{
-    borrow::ToOwned,
     string::{String, ToString},
     vec::Vec,
 };
 use serde::{Deserialize, Serialize};
 
-/// Block identifier
+/// Block ID (hash)
+#[derive(Debug, Default, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[repr(transparent)]
+pub struct BlockId(#[serde(with = "as_hex_array")] pub [u8; 32]);
+
+impl FromStr for BlockId {
+    type Err = Error;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut bytes = [0x00; 32];
+        hex::decode_to_slice(s, &mut bytes).map_err(|_| Error::InvalidBlockId)?;
+        Ok(Self(bytes))
+    }
+}
+
+impl Display for BlockId {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", hex::encode(self.0))
+    }
+}
+
+/// Block selector
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum BlockBy {
     /// ById
-    Id(String),
+    Id(BlockId),
     /// ByNumber
     Number(u64),
 }
@@ -20,7 +45,7 @@ impl BlockBy {
     /// By id or number
     pub fn id_or_num(&self) -> String {
         match self {
-            Self::Id(id) => id.to_owned(),
+            Self::Id(id) => id.to_string(),
             Self::Number(num) => num.to_string(),
         }
     }
@@ -67,7 +92,7 @@ impl BlockHeader {
 pub struct Block {
     /// Block id
     #[serde(rename = "blockID")]
-    pub block_id: String,
+    pub block_id: BlockId,
     /// Block header
     pub block_header: BlockHeader,
     /// Transactions

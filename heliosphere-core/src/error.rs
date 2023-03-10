@@ -5,6 +5,8 @@ pub enum Error {
     InvalidAddress,
     /// Invalid transaction id
     InvalidTransactionId,
+    /// Invalid block id
+    InvalidBlockId,
 }
 
 impl core::fmt::Display for Error {

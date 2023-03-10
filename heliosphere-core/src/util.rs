@@ -141,4 +141,18 @@ mod test {
             "\"0x41\""
         );
     }
+
+    #[derive(Serialize, Deserialize)]
+    #[repr(transparent)]
+    struct Array(#[serde(with = "as_hex_array")] [u8; 32]);
+
+    #[test]
+    fn test_hex_array() {
+        let test_data =
+            hex_literal::hex!("04644c93d200adb9010cc6396eb77a327fbdfa81a5e9e27407f84a010169e7c4");
+        assert_eq!(
+            serde_json::to_string(&Array(test_data)).unwrap(),
+            "\"0x04644c93d200adb9010cc6396eb77a327fbdfa81a5e9e27407f84a010169e7c4\""
+        );
+    }
 }
