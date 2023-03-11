@@ -1,4 +1,8 @@
-### 0.2.0 (February 17, 2023)
+### 0.2.0 (March 11, 2023)
+
+- BlockId struct instead of String
+
+- Implement get_account_balance
 
 - heliosphere-core and heliosphere-signers are now no_std compatible
 
