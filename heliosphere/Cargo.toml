@@ -1,6 +1,6 @@
 [package]
 name = "heliosphere"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["3A Technologies Ltd", "alianse777"]
 edition = "2021"
 description = "Rust-idiomatic Tron API client library"
@@ -11,8 +11,8 @@ categories = ["api-bindings"]
 repository = "https://github.com/3A-Technologies/heliosphere"
 
 [dependencies]
-heliosphere-core = "0.1.1"
-heliosphere-signer = "0.1.1"
+heliosphere-core = "0.2.0"
+heliosphere-signer = "0.2.0"
 hex = "0.4.3"
 reqwest = { version = "0.11.13", features = ["json"] }
 serde = { version = "1.0.152", features = ["derive"] }

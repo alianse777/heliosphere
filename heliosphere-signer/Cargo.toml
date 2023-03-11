@@ -1,6 +1,6 @@
 [package]
 name = "heliosphere-signer"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["3A Technologies Ltd", "alianse777"]
 edition = "2021"
 description = "Rust-idiomatic Tron API client library"
@@ -11,7 +11,7 @@ categories = ["api-bindings"]
 repository = "https://github.com/3A-Technologies/heliosphere"
 
 [dependencies]
-heliosphere-core = "0.1.1"
+heliosphere-core = "0.2.0"
 k256 = { version = "0.11.6", default-features = false, features = [
     "arithmetic",
     "ecdsa",
