@@ -1,4 +1,4 @@
-![Crates.io](https://img.shields.io/crates/v/heliopshere?style=flat-square) ![Crates.io](https://img.shields.io/crates/l/heliosphere?style=flat-square)
+![Crates.io](https://img.shields.io/crates/v/heliosphere?style=flat-square) ![Crates.io](https://img.shields.io/crates/l/heliosphere?style=flat-square)
 
 ## Description
 
