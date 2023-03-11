@@ -1,7 +1,7 @@
 use std::{collections::BTreeMap, time::Duration};
 
 use heliosphere_core::{
-    block::{Block, BlockBy, BlockHeader, BlockId},
+    block::{Block, BlockBy, BlockHeader},
     transaction::{Transaction, TransactionId},
     Address,
 };
@@ -9,9 +9,8 @@ use reqwest::{Client, IntoUrl, Url};
 use serde::{de::DeserializeOwned, Serialize};
 
 use self::types::{
-    AccountIdentifier, BlockIdentifier, BroadcastTxResponse, ChainParametersResponse,
-    GetAccountBalanceRequest, GetAccountBalanceResponse, QueryContractResponse, TransactionInfo,
-    TriggerContractResponse,
+    AccountBalanceResponse, BroadcastTxResponse, ChainParametersResponse, QueryContractResponse,
+    TransactionInfo, TriggerContractResponse,
 };
 
 mod types;
@@ -388,31 +387,15 @@ impl RpcClient {
         .await
     }
 
-    /// Query account balance, with block_identifier = (block_id, block_number). (default on latest block if block_identifier is None)
-    pub async fn get_account_balance(
-        &self,
-        account: &Address,
-        block_identifier: Option<(BlockId, u64)>,
-    ) -> Result<u64, crate::Error> {
-        let (hash, number) = match block_identifier {
-            Some(x) => x,
-            None => {
-                let block = self.get_latest_block().await?;
-                (block.block_id, block.block_number())
-            }
-        };
-        let block_identifier = BlockIdentifier { hash, number };
-        let account_identifier = AccountIdentifier { address: *account };
-        let req = GetAccountBalanceRequest {
-            block_identifier,
-            account_identifier,
-        };
-        let resp: GetAccountBalanceResponse =
-            self.api_post("/wallet/getaccountbalance", &req).await?;
-        if let Some(err) = resp.error.as_ref() {
-            return Err(crate::Error::ApiError(err.to_owned()));
-        }
-        Ok(resp.balance)
+    /// Query TRX account balance (including frozen)
+    pub async fn get_account_balance(&self, account: &Address) -> Result<u64, crate::Error> {
+        let resp: AccountBalanceResponse = self
+            .api_post(
+                "/wallet/getaccount",
+                &serde_json::json!({ "address": account.as_hex() }),
+            )
+            .await?;
+        resp.balance.ok_or(crate::Error::AccountNotFound)
     }
 
     /// All parameters that the blockchain committee can set

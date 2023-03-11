@@ -28,4 +28,7 @@ pub enum Error {
     /// Contract does not exists
     #[error("contract not found")]
     ContractNotFound,
+    /// Account does not exists
+    #[error("account not found")]
+    AccountNotFound,
 }

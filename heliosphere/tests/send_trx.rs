@@ -15,7 +15,7 @@ async fn test_send_trx() {
     let from = keypair.address();
     let to: Address = "TB9n2jzcWoqta1xX2Mv8P3y9tyUNsGTFsQ".parse().unwrap();
     let amount = 1;
-    let old_balance = client.get_account_balance(&from, None).await.unwrap();
+    let old_balance = client.get_account_balance(&from).await.unwrap();
     let mut tx = client.trx_transfer(&from, &to, amount).await.unwrap();
     keypair.sign_transaction(&mut tx).unwrap();
     let txid = client.broadcast_transaction(&tx).await.unwrap();
@@ -23,6 +23,6 @@ async fn test_send_trx() {
     println!("Confirming...");
     let info = client.await_confirmation(txid).await.unwrap();
     println!("{:?}", info);
-    let new_balance = client.get_account_balance(&from, None).await.unwrap();
-    assert_eq!(old_balance, new_balance + amount);
+    let new_balance = client.get_account_balance(&from).await.unwrap();
+    assert!(old_balance >= new_balance + amount); // including TRX burn
 }
