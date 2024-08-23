@@ -13,7 +13,9 @@ use alloc::{
 use serde::{Deserialize, Serialize};
 
 /// Block ID (hash)
-#[derive(Debug, Default, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(
+    Debug, Default, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord,
+)]
 #[repr(transparent)]
 pub struct BlockId(#[serde(with = "as_hex_array")] pub [u8; 32]);
 
@@ -29,6 +31,18 @@ impl FromStr for BlockId {
 impl Display for BlockId {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{}", hex::encode(self.0))
+    }
+}
+
+impl From<alloy_primitives::BlockHash> for BlockId {
+    fn from(value: alloy_primitives::BlockHash) -> Self {
+        Self(value.0)
+    }
+}
+
+impl From<BlockId> for alloy_primitives::BlockHash {
+    fn from(value: BlockId) -> Self {
+        Self(value.0)
     }
 }
 

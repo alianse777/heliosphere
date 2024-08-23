@@ -31,4 +31,7 @@ pub enum Error {
     /// Account does not exists
     #[error("account not found")]
     AccountNotFound,
+    /// Failed to sign transaction
+    #[error("Failed to sign tx: {0}")]
+    SignerError(String),
 }

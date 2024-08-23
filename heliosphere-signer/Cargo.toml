@@ -1,22 +1,26 @@
 [package]
 name = "heliosphere-signer"
-version = "0.2.0"
-authors = ["3A Technologies Ltd", "alianse777"]
+version = "0.3.0"
+authors = ["alianse777"]
 edition = "2021"
 description = "Rust-idiomatic Tron API client library"
 readme = "README.md"
 license = "MIT"
 keywords = ["tron", "blockchain", "api", "client", "cryptocurrency"]
 categories = ["api-bindings"]
-repository = "https://github.com/3A-Technologies/heliosphere"
+repository = "https://github.com/alianse777/heliosphere"
+
+[features]
+default = ["std"]
+std = ["thiserror", "k256/std"]
 
 [dependencies]
-heliosphere-core = "0.2.0"
-k256 = { version = "0.11.6", default-features = false, features = [
+heliosphere-core = "0.3"
+k256 = { version = "0.13", default-features = false, features = [
     "arithmetic",
     "ecdsa",
-    "keccak256",
 ] }
-sha3 = { version = "0.10.6", default-features = false }
-hex = { version = "0.4.3", default-features = false, features = ["alloc"] }
-rand_core = "0.6.4"
+sha3 = { version = "0.10", default-features = false }
+hex = { version = "0.4", default-features = false, features = ["alloc"] }
+rand_core = "0.6"
+thiserror = { version = "1.0", optional = true }

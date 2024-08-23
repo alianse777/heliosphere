@@ -5,6 +5,7 @@ use heliosphere_core::{
     transaction::{Transaction, TransactionId},
     Address,
 };
+use heliosphere_signer::signer::Signer;
 use reqwest::{Client, IntoUrl, Url};
 use serde::{de::DeserializeOwned, Serialize};
 
@@ -95,7 +96,7 @@ impl RpcClient {
     {
         Ok(self
             .client
-            .post(&format!("{}/{}", self.rpc_url, method))
+            .post(format!("{}/{}", self.rpc_url, method))
             .json(payload)
             .send()
             .await?
@@ -110,7 +111,7 @@ impl RpcClient {
     {
         Ok(self
             .client
-            .get(&format!("{}/{}", self.rpc_url, method))
+            .get(format!("{}/{}", self.rpc_url, method))
             .send()
             .await?
             .json()
@@ -124,7 +125,13 @@ impl RpcClient {
     ) -> Result<TransactionId, crate::Error> {
         let resp: BroadcastTxResponse = self.api_post("/wallet/broadcasttransaction", tx).await?;
         match resp.code {
-            Some(err) => Err(crate::Error::TxConstructionFailed(err, resp.message)),
+            Some(err) => Err(crate::Error::TxConstructionFailed(
+                err,
+                hex::decode(&resp.message)
+                    .ok()
+                    .and_then(|x| String::from_utf8(x).ok())
+                    .unwrap_or(resp.message),
+            )),
             None => Ok(resp.txid),
         }
     }
@@ -188,7 +195,7 @@ impl RpcClient {
                 Some(x) => {
                     return Err(crate::Error::TxFailed(
                         x.ret
-                            .get(0)
+                            .first()
                             .map(|x| x.contract_ret.clone())
                             .unwrap_or_else(|| "empty ret".to_owned()),
                     ))
@@ -237,54 +244,6 @@ impl RpcClient {
             &serde_json::json!({
                 "owner_address": payer.as_hex(),
                 "account_address": account.as_hex(),
-            }),
-        )
-        .await
-    }
-
-    /** Stake an amount of TRX to obtain bandwidth OR Energy and TRON Power (voting rights).
-     ** owner - Source of staked TRX
-     ** amount - Amount of TRX to stake in SUN (1 TRX = 1,000,000 SUN)
-     ** resource - Stake for Energy or Bandwidth
-     ** receiver_address - Optional, can be used to delegate obtained energy or bandwidth to another address
-     */
-    pub async fn freeze_balance(
-        &self,
-        owner: &Address,
-        amount: u64,
-        resource: ResourceType,
-        receiver_address: Option<&Address>,
-    ) -> Result<Transaction, crate::Error> {
-        self.api_post(
-            "/wallet/freezebalance",
-            &serde_json::json!({
-                "owner_address": owner.as_hex(),
-                "frozen_balance": amount,
-                "frozen_duration": 3_u8,
-                "resource": resource,
-                "receiver_address": receiver_address.map(|x| x.as_hex()),
-            }),
-        )
-        .await
-    }
-
-    /** Unstake TRX
-     ** owner - Source of staked TRX
-     ** resource - Stake for Energy or Bandwidth
-     ** receiver_address - Optional, if resources were delegated to another address
-     */
-    pub async fn unfreeze_balance(
-        &self,
-        owner: &Address,
-        resource: ResourceType,
-        receiver_address: Option<&Address>,
-    ) -> Result<Transaction, crate::Error> {
-        self.api_post(
-            "/wallet/unfreezebalance",
-            &serde_json::json!({
-                "owner_address": owner.as_hex(),
-                "resource": resource,
-                "receiver_address": receiver_address.map(|x| x.as_hex()),
             }),
         )
         .await
@@ -350,6 +309,59 @@ impl RpcClient {
             ));
         }
         Ok(resp)
+    }
+
+    /** Deploy smart contract
+     ** abi: JSON ABI array
+     ** bytecode: Compiled contract bytecode
+     ** name: contract name
+     ** owner: contract owner (and deployer)
+     */
+    pub async fn deploy_contract(
+        &self,
+        abi: &str,
+        bytecode: &[u8],
+        name: &str,
+        deployer: &impl Signer,
+    ) -> Result<Address, crate::Error> {
+        let mut tx = self
+            .api_post(
+                "/wallet/deploycontract",
+                &serde_json::json!({
+                    "abi": abi,
+                    "bytecode": hex::encode(bytecode),
+                    "name": name,
+                    "owner_address": deployer.address(),
+                    "visible": true
+                }),
+            )
+            .await?;
+        deployer
+            .sign_transaction(&mut tx)
+            .map_err(|e| crate::Error::SignerError(format!("{:?}", e)))?;
+        let txid = self.broadcast_transaction(&tx).await?;
+        let info = self.await_confirmation(txid).await?;
+        let contract = info
+            .transaction
+            .raw_data
+            .contract
+            .first()
+            .ok_or(crate::Error::ContractNotFound)?;
+        let new_address = contract
+            .parameter
+            .get("value")
+            .ok_or_else(|| crate::Error::UnknownResponse("no value field".to_owned()))?
+            .get("new_contract")
+            .ok_or_else(|| crate::Error::UnknownResponse("no new_contract field".to_owned()))?
+            .get("contract_address")
+            .ok_or_else(|| crate::Error::UnknownResponse("no contract_address field".to_owned()))?
+            .as_str()
+            .ok_or_else(|| {
+                crate::Error::UnknownResponse("returned contract_address is not string".to_owned())
+            })?;
+        new_address
+            .parse()
+            .map_err(|_| crate::Error::UnknownResponse(format!("Invalid address: {}", new_address)))
     }
 
     /** Estimate energy cost of given smart contract call

@@ -1,12 +1,13 @@
+//! Universal address representation
+use crate::error::Error;
 use alloc::string::String;
 use core::fmt::{Debug, Display};
 use core::str::FromStr;
 use serde::{Deserialize, Serialize};
-
-use crate::error::Error;
+use zerocopy::AsBytes;
 
 /// Account address struct
-#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct Address([u8; 21]);
 
@@ -93,7 +94,21 @@ impl From<ethabi::Address> for Address {
 #[cfg(feature = "ethabi_compat")]
 impl From<Address> for ethabi::Address {
     fn from(address: Address) -> Self {
-        Self(address.0[1..].try_into().unwrap())
+        Self(address.0[1..].try_into().expect("Always 20 bytes"))
+    }
+}
+
+impl From<alloy_primitives::Address> for Address {
+    fn from(address: alloy_primitives::Address) -> Self {
+        let mut buf = [0x41; 21];
+        buf[1..].copy_from_slice(address.as_bytes());
+        Self(buf)
+    }
+}
+
+impl From<Address> for alloy_primitives::Address {
+    fn from(address: Address) -> Self {
+        Self(address.0[1..].try_into().expect("Always 20 bytes"))
     }
 }
 

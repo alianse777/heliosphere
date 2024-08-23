@@ -8,7 +8,7 @@ use alloc::{
 use serde::{Deserialize, Serialize};
 
 /// Transaction id wrapper, serializable as hex string
-#[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct TransactionId(#[serde(with = "as_hex_array")] pub [u8; 32]);
 
@@ -36,6 +36,18 @@ impl core::str::FromStr for TransactionId {
     }
 }
 
+impl From<alloy_primitives::TxHash> for TransactionId {
+    fn from(value: alloy_primitives::TxHash) -> Self {
+        Self(value.0)
+    }
+}
+
+impl From<TransactionId> for alloy_primitives::TxHash {
+    fn from(value: TransactionId) -> Self {
+        Self(value.0)
+    }
+}
+
 /// Contract call with json payload
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Contract {
@@ -48,8 +60,8 @@ pub struct Contract {
 /// See tron docs for field description
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct RawTxData {
-    #[serde(default)]
-    pub data: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub data: Option<String>,
     pub contract: Vec<Contract>,
     pub expiration: u64,
     pub timestamp: u64,

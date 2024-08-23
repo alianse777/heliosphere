@@ -1,14 +1,11 @@
 //! Signer utils
 
-use alloc::string::ToString;
 use alloc::vec::Vec;
+use alloc::{format, string::ToString};
 use core::fmt::Debug;
 use heliosphere_core::transaction::Transaction;
 use heliosphere_core::Address;
-use k256::{
-    ecdsa::{recoverable::Signature as RecoverableSignature, VerifyingKey},
-    elliptic_curve::sec1::ToEncodedPoint,
-};
+use k256::ecdsa::{RecoveryId, Signature, VerifyingKey};
 use sha3::{Digest, Keccak256};
 
 const TRON_MESSAGE_PREFIX: &[u8] = b"\x19TRON Signed Message:\n";
@@ -56,12 +53,16 @@ pub trait Signer {
     }
 
     /// Sign hashed value
-    fn sign_prehash(&self, prehash: &[u8]) -> Result<RecoverableSignature, Self::Error>;
+    fn sign_prehash(&self, prehash: &[u8]) -> Result<(Signature, RecoveryId), Self::Error>;
 
     /// Sign transaction
     fn sign_transaction(&self, tx: &mut Transaction) -> Result<(), Self::Error> {
-        let signature = self.sign_prehash(&tx.tx_id.0)?;
-        tx.signature.push(hex::encode(signature));
+        let (signature, rec_id) = self.sign_prehash(&tx.tx_id.0)?;
+        tx.signature.push(format!(
+            "{}{:02}",
+            hex::encode(signature.to_bytes()),
+            rec_id.to_byte()
+        ));
         Ok(())
     }
 }
