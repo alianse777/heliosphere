@@ -3,7 +3,8 @@ use heliosphere_core::block::BlockBy;
 
 #[tokio::test]
 async fn test_get_block() {
-    let api = "https://api.shasta.trongrid.io";
+    // let api = "https://api.shasta.trongrid.io";
+    let api = "https://nile.trongrid.io";
     let client = RpcClient::new(api).unwrap();
     let latest_block = client.get_latest_block().await.unwrap();
     println!("block number: {}", latest_block.block_number());

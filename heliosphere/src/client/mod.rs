@@ -94,9 +94,12 @@ impl RpcClient {
         P: Serialize,
         R: DeserializeOwned,
     {
+        let rpc_url_string = self.rpc_url.to_string();
+        let rpc_url = rpc_url_string.trim_end_matches("/");
+
         Ok(self
             .client
-            .post(format!("{}/{}", self.rpc_url, method))
+            .post(format!("{}{}", rpc_url, method))
             .json(payload)
             .send()
             .await?
@@ -109,9 +112,12 @@ impl RpcClient {
     where
         R: DeserializeOwned,
     {
+        let rpc_url_string = self.rpc_url.to_string();
+        let rpc_url = rpc_url_string.trim_end_matches("/");
+
         Ok(self
             .client
-            .get(format!("{}/{}", self.rpc_url, method))
+            .get(format!("{}{}", rpc_url, method))
             .send()
             .await?
             .json()
